@@ -1,6 +1,9 @@
 #node modules take up alot of space after npm install
+#build related
 node_modules
-
+/build
+/dist
+*.map
 
 #logs
 logs
