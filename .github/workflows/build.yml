@@ -65,7 +65,7 @@ jobs:
       - name: Start Server and Log Output
         run: |
           npm run start > server.log 2>&1 &
-            sleep 30
+            sleep 25
 
       - name: Display Server Logs
         run: cat server.log
