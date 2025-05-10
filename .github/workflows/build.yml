@@ -62,6 +62,15 @@ jobs:
       - name: Build project
         run: npm run build:extension
 
+      - name: verify server running
+        run: |
+          for i in {1..5}; do
+            echo "Attempt $i to check server status..."
+            curl -I http://localhost:3000 && break
+            sleep 5
+          done
+          curl -I http://localhost:3000 || (echo "Server is not running after 5 attempts" && exit 1)
+
       - name: wait for server to launch
         run: sleep 30
       
