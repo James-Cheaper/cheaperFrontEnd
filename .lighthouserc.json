@@ -4,7 +4,7 @@
         "url": ["http://localhost:3000"],
         "numberOfRuns": 3,
         "settings": {
-          "chromeFlags": "--no-sandbox --headless",
+          "chromeFlags": "--no-sandbox --headless --ignore-certificate-errors --disable-web-security",
           "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
         }
       },
