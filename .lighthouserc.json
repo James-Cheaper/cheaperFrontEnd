@@ -1,10 +1,10 @@
 {
     "ci": {
       "collect": {
-        "url": ["https://localhost:3000"],
+        "url": ["http://localhost:3000"],
         "numberOfRuns": 3,
         "settings": {
-          "chromeFlags": "--no-sandbox --headless --ignore-certificate-errors --disable-web-security",
+          "chromeFlags": "--no-sandbox --headless --ignore-certificate-errors --disable-web-security --allow-insecure-localhost",
           "onlyCategories": ["performance", "accessibility", "best-practices", "seo"]
         }
       },
