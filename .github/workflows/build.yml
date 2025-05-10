@@ -62,6 +62,9 @@ jobs:
       - name: Build project
         run: npm run build:extension
 
+      - name: wait for server to launch
+        run: sleep 20
+      
       - name: verify server running
         run: |
           for i in {1..5}; do
@@ -71,9 +74,6 @@ jobs:
           done
           curl -I http://localhost:3000 || (echo "Server is not running after 5 attempts" && exit 1)
 
-      - name: wait for server to launch
-        run: sleep 30
-      
       - name: Run Lighthouse audit
         uses: treosh/lighthouse-ci-action@v9
         with:
