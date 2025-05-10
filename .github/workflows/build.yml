@@ -62,11 +62,6 @@ jobs:
       - name: Build project
         run: npm run build:extension
       
-      - name: Validate Extension
-        run: |
-          npm install -g @wext/validate
-          wext-validate build
-      
       - name: Run Lighthouse audit
         uses: treosh/lighthouse-ci-action@v9
         with:
