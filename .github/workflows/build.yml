@@ -61,6 +61,9 @@ jobs:
       
       - name: Build project
         run: npm run build:extension
+
+      - name: wait for server to launch
+        run: sleep 30
       
       - name: Run Lighthouse audit
         uses: treosh/lighthouse-ci-action@v9
