@@ -67,12 +67,17 @@ jobs:
       
       - name: verify server running
         run: |
-          for i in {1..5}; do
+          for i in {1..10}; do
             echo "Attempt $i to check server status..."
-            curl -I http://localhost:3000 && break
-            sleep 5
+            if curl -s http://localhost:3000 | grep -q "<html>"; then
+              echo "Server is up!"
+              break
+            else
+              echo "Server not ready yet... retrying in 5 seconds"
+              sleep 5
+            fi
           done
-          curl -I http://localhost:3000 || (echo "Server is not running after 5 attempts" && exit 1)
+          curl -I http://localhost:3000 || (echo "Server is not running after 10 attempts" && exit 1)
 
       - name: Run Lighthouse audit
         uses: treosh/lighthouse-ci-action@v9
