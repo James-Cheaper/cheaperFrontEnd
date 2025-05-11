@@ -14,7 +14,7 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "react-scripts build && cp -R public/icons build/icons",
     "postbuild": "node scripts/postbuild.js",
     "build:extension": "npm run build && cp public/manifest.json build/ && cp -r public/icons build/",
     "test": "react-scripts test",
