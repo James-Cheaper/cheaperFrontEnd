@@ -5,7 +5,7 @@ module.exports = {
     babelOptions: {
       presets: ["@babel/preset-react"],
     },
-    ecmaVersion: 2021,
+    ecmaVersion: "latest",
     sourceType: "module",
     ecmaFeatures: {
       jsx: true,
@@ -17,7 +17,11 @@ module.exports = {
     es6: true,
     jest: true,
   },
-  plugins: ["react", "react-hooks", "jsx-a11y"],
+  plugins: [
+    "react",
+    "react-hooks",
+    "jsx-a11y"
+  ],
   extends: [
     "eslint:recommended",
     "plugin:react/recommended",
