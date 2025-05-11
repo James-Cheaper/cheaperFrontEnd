@@ -25,9 +25,6 @@ jobs:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
       
-      - name: Install dependencies
-        run: npm ci
-      
       - name: Run ESLint
         run: npm run lint
       
@@ -45,6 +42,9 @@ jobs:
     name: Build & Validate
     runs-on: ubuntu-latest
     needs: lint_and_test
+    strategy:
+      matrix:
+        node-version: [18.x]
     
     steps:
       - name: Checkout code
@@ -61,6 +61,10 @@ jobs:
       
       - name: Build project
         run: npm run build:extension
+             ls -la build
+
+      - name: Set Public Url
+        run: echo "PUBLIC_URL=." >> $GITHUB_ENV 
     
       - name: Start Server and Log Output
         run: |
