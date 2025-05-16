@@ -1,5 +1,5 @@
 import { render, screen, fireEvent } from '@testing-library/react';
-import SearchBar from './components/SearchBar';
+import SearchBar from './SearchBar';
 
 test('renders search input', () => {
   render(<SearchBar onSearch={() => {}} />);
