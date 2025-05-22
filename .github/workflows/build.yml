@@ -100,6 +100,12 @@ jobs:
           grep -i "serviceWorker" build/index.html || echo "❌ No service worker registered"
           ls build/service-worker.js || echo "❌ service-worker.js not found"
       
+      - name: Log server contents
+        run: cat server.log
+
+      - name: Debug loaded HTML
+        run: curl -s http://localhost:8080 | tee page.html
+
       - name: Debug Build Output
         run: |
           echo "🔍 Build manifest.json:"
