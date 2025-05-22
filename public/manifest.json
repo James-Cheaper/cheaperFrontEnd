@@ -6,7 +6,7 @@
   "version": "1.0.0",
   "description": "A Chrome extension for price comparison.",
   "permissions": ["activeTab", "scripting", "storage"],
-  "theme_color": "#000000",
+  "theme_color": "#317EFB",
   "display": "standalone",
   "start_url": "/",
   "background_color": "#ffffff",
