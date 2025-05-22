@@ -131,8 +131,9 @@ jobs:
       - name: Run Lighthouse audit
         uses: treosh/lighthouse-ci-action@v9
         with:
-          configPath: './cheaperFrontEnd/lighthouserc.json'
+          configPath: './.lighthouserc.json'
           uploadArtifacts: true
+          temporaryPublicStorage: false
       
       - name: Check bundle size
         run: |
