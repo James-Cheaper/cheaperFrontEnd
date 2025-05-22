@@ -76,7 +76,9 @@ jobs:
       - name: Start Server and Log Output
         run: |
           npx npm run start:prod > server.log 2>&1 &
-          sleep 15
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:8080
 
       - name: Display Server Logs
         run: cat server.log
