@@ -75,7 +75,7 @@ jobs:
     
       - name: Start Server and Log Output
         run: |
-          npx serve -s build -l 8080 > server.log 2>&1 &
+          npx npm run start:prod > server.log 2>&1 &
           sleep 15
 
       - name: Display Server Logs
@@ -99,6 +99,9 @@ jobs:
         run: |
           grep -i "serviceWorker" build/index.html || echo "❌ No service worker registered"
           ls build/service-worker.js || echo "❌ service-worker.js not found"
+
+      - name: List build content
+        run: ls -la build
       
       - name: Log server contents
         run: cat server.log
