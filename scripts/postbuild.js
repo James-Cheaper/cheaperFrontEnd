@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
-// Fix paths in index.html
+// Fix index.html paths for file-based loading (needed for extensions)
 const indexPath = path.join(__dirname, '../build/index.html');
 let indexHtml = fs.readFileSync(indexPath, 'utf8');
 
@@ -11,13 +11,20 @@ indexHtml = indexHtml.replace(/\/logo\d+\.png/g, (match) => `./${match.substring
 
 fs.writeFileSync(indexPath, indexHtml, 'utf8');
 
-// Update manifest.json paths
+// If manifest is extension, update popup path
 const manifestPath = path.join(__dirname, '../build/manifest.json');
-const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
 
-manifest.action.default_popup = './index.html';
+if (fs.existsSync(manifestPath)) {
+  const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
+  const isExtension = manifest.manifest_version === 3 && manifest.action;
 
-fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
-
-// eslint-disable-next-line no-console
-console.log('Post-build modifications completed successfully');
+  if (isExtension) {
+    manifest.action.default_popup = './index.html';
+    fs.writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
+    console.log('Extension manifest updated.');
+  } else {
+    console.log('PWA manifest detected — no changes needed.');
+  }
+} else {
+  console.warn('No manifest.json found in build — skipping.');
+}
