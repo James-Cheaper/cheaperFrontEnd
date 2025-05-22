@@ -16,7 +16,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build && cp -R public/icons build/icons",
     "build:pwa":"npm run build && cp public/manifest.pwa.json build/manifest.json",
-    "build:extension": "npm run build && cp public/manifest.extension.json build/manifest.json && node scripts/postbuild.js",
+    "build:extension": "npm run build && cp public/extension.manifest.json build/manifest.json && node scripts/postbuild.js",
     "postbuild": "node scripts/postbuild.js",
     "test": "react-scripts test",
     "test:ci": "react-scripts test --watchAll=false --ci --coverage",
