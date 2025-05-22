@@ -24,7 +24,7 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-          
+
       - name: Install ESLintv8
         run: npm install --save-dev eslint@8
 
@@ -72,8 +72,8 @@ jobs:
     
       - name: Start Server and Log Output
         run: |
-          PORT =8080 npm run start > server.log 2>&1 &
-          sleep 15
+          PORT=8080 npm run start > server.log 2>&1 &
+          sleep 30
 
       - name: Display Server Logs
         run: cat server.log
