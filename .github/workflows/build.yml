@@ -64,10 +64,13 @@ jobs:
       
       - name: Install dependencies
         run: npm ci
+
+      - name: Install serve
+        run: npm install -g serve
       
       - name: Build project
         run: |
-              npm run build:extension
+              npm run build
               ls -la build
 
       - name: Set Public Url
@@ -128,10 +131,8 @@ jobs:
       - name: Run Lighthouse audit
         uses: treosh/lighthouse-ci-action@v9
         with:
-          urls: |
-            http://localhost:8080
-          temporaryPublicStorage: true
-          configPath: .lighthouserc.json
+          configPath: './lighthouserc.json'
+          uploadArtifacts: true
       
       - name: Check bundle size
         run: |
