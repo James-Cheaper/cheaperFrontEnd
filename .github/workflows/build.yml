@@ -1,0 +1,152 @@
+name: CI Pipeline (Lint + Build + Test + Validate)
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+env:
+  CI: true
+  NODE_VERSION: '18'
+
+jobs:
+  lint_and_test:
+    name: Lint & Test
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install ESLintv8
+        run: npm install --save-dev eslint@8
+
+      - name: Run ESLint
+        run: npx eslint src --ext .js,.jsx --max-warnings=0
+      
+      - name: Run Jest tests
+        run: npm run test:ci
+
+#      - name: Run Lighthouse CI
+#        run: npx lhci autorun --config=.lighthouserc.js
+
+      - name: Upload test coverage
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage/
+          retention-days: 7
+
+  build_and_validate:
+    name: Build & Validate
+    runs-on: ubuntu-latest
+    needs: lint_and_test
+    strategy:
+      matrix:
+        node-version: [18.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+      
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install serve
+        run: npm install -g serve
+      
+      - name: Build project
+        run: |
+              npm run build
+              ls -la build
+
+      - name: Set Public Url
+        run: echo "PUBLIC_URL=." >> $GITHUB_ENV 
+    
+      - name: Start Server and Log Output
+        run: |
+          npx serve -s build -l 8080 > server.log 2>&1 &
+
+      - name: Wait for server
+        run: npx wait-on http://localhost:8080
+
+      - name: Display Server Logs
+        run: cat server.log
+
+      - name: verify server running
+        run: |
+          for i in {1..3}; do
+            echo "Attempt $i to check server status..."
+            if curl -s http://localhost:8080 | grep -q "<html>"; then
+              echo "Server is up!"
+              break
+            else
+              echo "Server not ready yet... retrying in 5 seconds"
+              sleep 5
+            fi
+          done
+          curl -I http://localhost:8080 || (echo "Server is not running after 3 attempts" && exit 1)
+      
+      - name: Check service worker
+        run: |
+          grep -i "serviceWorker" build/index.html || echo "❌ No service worker registered"
+          ls build/service-worker.js || echo "❌ service-worker.js not found"
+
+      - name: List build content
+        run: ls -la build
+      
+      - name: Log server contents
+        run: cat server.log
+
+      - name: Debug loaded HTML
+        run: curl -s http://localhost:8080 | tee page.html
+
+      - name: Debug Build Output
+        run: |
+          echo "🔍 Build manifest.json:"
+          cat build/manifest.json || echo "❌ manifest.json missing"
+    
+          echo "🔍 Check index.html for manifest link:"
+          grep -i "manifest" build/index.html || echo "❌ Manifest not linked"
+    
+          echo "🔍 Apple touch icon:"
+          grep -i "apple-touch-icon" build/index.html || echo "❌ Not linked"
+    
+          echo "🔍 Check icons folder:"
+          ls -lh build/icons || echo "❌ Icons folder missing"
+#
+#      - name: Run Lighthouse audit
+#        uses: treosh/lighthouse-ci-action@v9
+#        with:
+#          configPath: './.lighthouserc.json'
+#          temporaryPublicStorage: false
+      
+#      - name: Check bundle size
+#        run: |
+#          npm install -g size-limit
+#          size-limit
+      
+      - name: Package Extension
+        run: npm run package
+      
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: production-artifacts
+          path: |
+            build/
+            dist/
+          retention-days: 7
