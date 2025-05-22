@@ -1,6 +1,7 @@
 {
   "name": "Cheaper",
   "short_name": "Cheaper",
+  "version": "0.8",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
