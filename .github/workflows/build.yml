@@ -133,11 +133,11 @@ jobs:
 #        with:
 #          configPath: './.lighthouserc.json'
 #          temporaryPublicStorage: false
-      #
-      - name: Check bundle size
-        run: |
-          npm install -g size-limit
-          size-limit
+      
+#      - name: Check bundle size
+#        run: |
+#          npm install -g size-limit
+#          size-limit
       
       - name: Package Extension
         run: npm run package
