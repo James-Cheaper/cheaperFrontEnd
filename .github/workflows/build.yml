@@ -24,7 +24,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: 'npm'
-      
+          
+      - name: Install ESLintv8
+        run: npm install --save-dev eslint@8
+
       - name: Run ESLint
         run: npx eslint src --ext .js,.jsx --max-warnings=0
       
