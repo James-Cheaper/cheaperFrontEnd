@@ -33,7 +33,29 @@ jobs:
       
       - name: Run Jest tests
         run: npm run test:ci
+
+      - name: Check service worker
+        run: |
+          grep -i "serviceWorker" build/index.html || echo "❌ No service worker registered"
+          ls build/service-worker.js || echo "❌ service-worker.js not found"
       
+      - name: Debug Build Output
+        run: |
+          echo "🔍 Build manifest.json:"
+          cat build/manifest.json || echo "❌ manifest.json missing"
+    
+          echo "🔍 Check index.html for manifest link:"
+          grep -i "manifest" build/index.html || echo "❌ Manifest not linked"
+    
+          echo "🔍 Apple touch icon:"
+          grep -i "apple-touch-icon" build/index.html || echo "❌ Not linked"
+    
+          echo "🔍 Check icons folder:"
+          ls -lh build/icons || echo "❌ Icons folder missing"
+
+      - name: Run Lighthouse CI
+        run: npx lhci autorun --config=.lighthouserc.js
+
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
         with:
