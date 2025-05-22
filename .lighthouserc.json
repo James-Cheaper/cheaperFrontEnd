@@ -1,7 +1,7 @@
 {
     "ci": {
       "collect": {
-        "url": ["http://localhost:3000"],
+        "url": ["http://localhost:8080"],
         "numberOfRuns": 3,
         "settings": {
           "chromeFlags": " --enable-logging =stderr --v=1 --no-sandbox --headless --ignore-certificate-errors --disable-web-security ",
