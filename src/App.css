@@ -1,136 +1,222 @@
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background-color: #0d1117; /* Deep dark background */
+  color: white; /* Default text color */
+}
+
+/* NEW: Sticky Banner Styles */
+.sticky-banner {
+  position: fixed; /* Makes it stick to the viewport */
+  width: 100%;
+  left: 0;
+  z-index: 1000; /* Ensure it's above other content */
+  background-color: #238636; /* A prominent color for the banner */
+  color: white;
+  text-align: center;
+  padding: 8px 0; /* Adjust padding as needed */
+  font-size: 0.95rem;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3); /* Subtle shadow below the banner */
+  transition: background-color 0.3s ease; /* Smooth transition for potential future interaction */
+}
+
+.top-banner {
+  top: 0; /* Sticks to the top */
+}
+
+.banner-content {
+  max-width: 1000px; /* Constrain content width if needed */
+  margin: 0 auto;
+  padding: 0 15px; /* Add horizontal padding for smaller screens */
+}
+
+
 .App {
   text-align: center;
-  padding: 20px;
-  max-width: 800px;
+  padding: 40px 20px;
+  max-width: 1000px;
   margin: 0 auto;
+  /* Adjust padding-top to account for the sticky banner's height */
+  padding-top: calc(40px + 40px); /* Original padding-top + approx banner height (padding + font-size) */
+                                /* You might need to fine-tune this value */
 }
 
 h1 {
-  color: #2c3e50;
-  margin-bottom: 10px;
+  font-size: 2.5rem;
+  color: #58a6ff; /* GitHub blue for primary elements */
+  margin-bottom: 0.5rem;
 }
 
 p {
-  color: #333;
-  background-color: #fff;
-  margin-bottom: 20px;
+  color: #b1b1b1; /* Lighter grey for secondary text */
+  margin-bottom: 2rem;
+  font-size: 1.1rem;
 }
 
-button {
-  background-color: #3498db;
-  color: white;
-  border: none;
-  padding: 10px 15px;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 16px;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #2980b9;
-}
-
-/* Search Bar Styles */
+/* --- Search Bar Styles --- */
 .search-container {
-  margin: 20px 0;
-  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-width: 500px; /* Constrain search bar width */
+  margin: 0 auto 2rem; /* Center and provide bottom margin */
+  background-color: #161b22; /* Darker background for the input area */
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Subtle shadow */
 }
 
 .search-input {
+  flex: 1; /* Allows input to grow and shrink */
+  background: transparent;
+  border: none;
+  outline: none; /* Remove outline on focus */
+  color: white;
   padding: 10px;
-  font-size: 16px;
-  border: 1px solid #ddd;
-  border-radius: 4px 0 0 4px;
-  width: 70%;
-  box-sizing: border-box;
+  font-size: 1rem;
+  height: 40px; /* Ensure consistent height */
 }
 
 .search-button {
-  padding: 10px 15px;
-  font-size: 16px;
-  background-color: #3498db;
+  background: #238636; /* GitHub green for action buttons */
+  border: none;
   color: white;
-  border: 1px solid #3498db;
-  border-radius: 0 4px 4px 0;
+  padding: 10px 15px;
+  border-radius: 8px;
   cursor: pointer;
+  font-size: 1rem; /* Ensure consistent font size */
+  transition: background-color 0.2s ease-in-out;
+  height: 40px; /* Match input height */
+  display: flex; /* For centering the icon if it were more complex */
+  align-items: center;
+  justify-content: center;
 }
 
 .search-button:hover {
-  background-color: #2980b9;
+  background-color: #2ea043; /* Slightly lighter green on hover */
 }
 
-/* Results area */
+/* --- Results Area --- */
 .results-container {
-  margin-top: 30px;
-  text-align: left;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); /* Responsive grid */
+  gap: 20px; /* Space between grid items */
+  margin-top: 2rem;
+  padding: 0 10px; /* Some padding on the sides if app is wide */
 }
+
+.results-heading { /* New class for the h2 "Search Results" */
+  text-align: left;
+  margin-bottom: 1rem;
+  color: #58a6ff; /* Match h1 color for consistency */
+  font-size: 1.8rem;
+  grid-column: 1 / -1; /* Make heading span all columns of the grid */
+}
+
 
 .result-item {
-  border: 1px solid #eee;
-  padding: 15px;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  background-color: #161b22; /* Darker background for result cards */
+  padding: 20px;
+  border-radius: 12px;
+  text-align: left;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.2); /* More prominent shadow */
+  display: flex; /* Use flexbox internally for item content */
+  flex-direction: column; /* Stack content vertically */
+  justify-content: space-between; /* Distribute space vertically */
+  min-height: 180px; /* Give items a consistent minimum height */
+  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.result-item:hover {
+  transform: translateY(-5px); /* Slight lift effect on hover */
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3); /* Enhanced shadow on hover */
 }
 
 .result-title {
   font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.result-price {
-  color: #27ae60;
-  font-weight: bold;
+  font-size: 1.1rem;
+  margin-bottom: 8px;
+  color: #c9d1d9; /* Light grey for titles */
+  position: relative;
 }
 
 .result-site {
-  color: #7f8c8d;
-  font-size: 14px;
+  color: #8b949e; /* Muted grey for site names */
+  font-size: 0.9rem;
+  margin-bottom: 6px;
 }
 
+.result-price {
+  color: #4caf50; /* Green for prices */
+  font-size: 1.4rem; /* Slightly larger price */
+  font-weight: bold;
+  margin-top: auto; /* Pushes the price to the bottom if content above varies */
+}
+
+/* --- State Messages --- */
 .no-results {
   text-align: center;
-  color: #7f8c8d;
+  color: #8b949e; /* Muted grey for messages */
   margin-top: 30px;
+  grid-column: 1 / -1; /* Make no-results span all columns */
 }
 
 .loading {
-  color: #3498db;
+  color: #58a6ff; /* Blue for loading message */
   padding: 15px 0;
   font-style: italic;
+  font-size: 1.1rem;
 }
 
+/* --- Feature Notification --- */
 .feature-notification {
   position: fixed;
   bottom: 20px;
   right: 20px;
   padding: 15px 20px;
-  background: #2c3e50;
-  color: white;
-  border-radius: 4px;
-  box-shadow: 0 2px 15px rgba(0,0,0,0.2);
+  background: #21262d; /* Slightly lighter dark background */
+  color: #58a6ff; /* Match heading color */
+  border-radius: 8px;
+  box-shadow: 0 2px 15px rgba(0, 0, 0, 0.4);
   display: flex;
   align-items: center;
   gap: 15px;
   animation: slideIn 0.3s ease-out;
   z-index: 1000;
+  border: 1px solid #30363d; /* Subtle border */
 }
 
-.feature-notification button {
+.feature-notification .close-btn { /* Specific class for the close button */
   background: none;
   border: none;
-  color: white;
-  font-size: 1.2rem;
+  color: #58a6ff; /* Match notification text color */
+  font-size: 1.5rem; /* Larger 'x' */
   cursor: pointer;
   padding: 0;
   line-height: 1;
+  transition: color 0.2s ease-in-out;
+  margin-left: 10px; /* Space from text */
 }
 
-.feature-notification button:hover {
-  opacity: 0.8;
+.feature-notification .close-btn:hover {
+  color: white; /* Highlight on hover */
+}
+
+/* --- Global Button Styles (General buttons like "Compare Across More Sites") --- */
+button:not(.search-button):not(.close-btn) { /* Apply to all buttons EXCEPT search-button and close-btn */
+  margin-top: 30px;
+  background-color: #238636;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  font-size: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s ease-in-out;
+}
+
+button:not(.search-button):not(.close-btn):hover {
+  background-color: #2ea043;
 }
 
 @keyframes slideIn {
@@ -145,10 +231,35 @@ button:hover {
 }
 
 /* Responsive adjustment */
+@media (max-width: 768px) {
+    .results-container {
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Smaller min-width on smaller screens */
+    }
+}
+
 @media (max-width: 600px) {
   .feature-notification {
     left: 20px;
     right: 20px;
     bottom: 10px;
+    text-align: center;
+    justify-content: center; /* Center content on small screens */
+  }
+  .search-container {
+      flex-direction: column; /* Stack search input and button */
+      max-width: 90%;
+  }
+  .search-input {
+      width: 100%;
+      margin-bottom: 10px; /* Space between input and button */
+      border-radius: 8px; /* Round corners on all sides */
+  }
+  .search-button {
+      width: 100%;
+      border-radius: 8px; /* Round corners on all sides */
+  }
+  /* Adjust App padding for banner on small screens if needed, based on specific banner height */
+  .App {
+      padding-top: calc(40px + 30px); /* Example adjustment for smaller banner height on mobile */
   }
 }
