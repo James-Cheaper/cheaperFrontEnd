@@ -147,7 +147,7 @@ const SignUp = ({ onAuthSuccess }) => {
 
         <div className="mt-8 text-center">
           <p className="text-sm text-gray-600">
-            No account?{' '}
+            Have an account?{' '}
             <button
               type="button"
               onClick={() => navigate('/signin')} // <-- Use navigate
