@@ -1,119 +1,130 @@
-import { render, screen, fireEvent, act, waitFor } from '@testing-library/react'; // Import waitFor
-import App from './App';
 import React from 'react';
+import { render, screen, act } from '@testing-library/react';
+import { MemoryRouter } from 'react-router-dom';
+import { AppWithNavigation } from './App'; // Exports inner component with Routes
 
-// Use fake timers to control setTimeout
-jest.useFakeTimers();
+// ✅ Mock SignIn
+jest.mock('./components/Auth/SignIn', () => ({
+  __esModule: true,
+  default: ({ onAuthSuccess }) => (
+    <div>
+      Mock SignIn Page
+      <button onClick={onAuthSuccess} data-testid="signin-success-btn">
+        Sign In Success
+      </button>
+    </div>
+  ),
+}));
 
-// Test for the main heading
-test('renders Cheaper heading', () => {
-  render(<App />);
-  const headingElement = screen.getByRole('heading', { name: /Cheaper/i });
-  expect(headingElement).toBeInTheDocument();
-});
+// ✅ Mock SignUp
+jest.mock('./components/Auth/SignUp', () => ({
+  __esModule: true,
+  default: ({ onAuthSuccess }) => (
+    <div>
+      Mock SignUp Page
+      <button onClick={onAuthSuccess} data-testid="signup-success-btn">
+        Sign Up Success
+      </button>
+    </div>
+  ),
+}));
 
-// Test for the subheading/slogan
-test('renders Why Pay More? Let Cheaper Score! 😎', () => {
-  render(<App />);
-  const subheading = screen.getByText(/Why Pay More\? Let Cheaper Score! 😎/i);
-  expect(subheading).toBeInTheDocument();
-});
+// ✅ Mock MainApp
+jest.mock('./MainApp', () => ({
+  __esModule: true,
+  default: ({ onSignOut }) => (
+    <div>
+      Mock MainApp
+      <button onClick={onSignOut} data-testid="signout-btn">
+        Sign Out
+      </button>
+    </div>
+  ),
+}));
 
-// Test for the search input bar
-test('renders search bar', () => {
-  render(<App />);
-  const input = screen.getByPlaceholderText(/Search for a product/i);
-  expect(input).toBeInTheDocument();
-});
+// ✅ Helper to render AppWithNavigation with any path
+const renderAppWithPath = (initialPath = '/') => {
+  return render(
+    <MemoryRouter initialEntries={[initialPath]}>
+      <AppWithNavigation />
+    </MemoryRouter>
+  );
+};
 
-// Test for the search button
-test('renders search button', () => {
-  render(<App />);
-  const button = screen.getByRole('button', { name: /Search/i });
-  expect(button).toBeInTheDocument();
-});
-
-// Describe block for App Component tests
-describe('App Component', () => {
-  // Test for state updates and API simulation
-  test('should update states and display results after API simulation', async () => {
-    render(<App />);
-    const searchInput = screen.getByPlaceholderText(/Search for a product/i);
-    const searchButton = screen.getByRole('button', { name: /Search/i });
-
-    // 1. Simulate typing a search term
-    fireEvent.change(searchInput, { target: { value: 'Laptop' } });
-
-    // 2. Simulate clicking the search button
-    fireEvent.click(searchButton);
-
-    // Expect loading message to appear immediately
-    expect(screen.getByText(/Searching for the best prices.../i)).toBeInTheDocument();
-    expect(screen.queryByText(/No results found/i)).not.toBeInTheDocument(); // Ensure no-results is not visible yet
-
-    // 3. Advance timers by 1000ms to simulate API response time
-    // Use act to ensure all state updates and re-renders from the timeout are processed
-    await act(async () => {
-      jest.advanceTimersByTime(1000);
-    });
-
-    // 4. Assert states after API simulation
-    // Use waitFor to wait for the loading message to disappear and results to appear
-    await waitFor(() => {
-      expect(screen.queryByText(/Searching for the best prices.../i)).not.toBeInTheDocument();
-    });
-
-    // Expect the "Search Results" heading to be present
-    expect(screen.getByRole('heading', { name: /Search Results/i })).toBeInTheDocument();
-
-    // Expect the correct number of result items (based on mockResults in App.js)
-    // You can search for a common part of the title or the result-item class if your mock data is dynamic
-    const resultItems = screen.getAllByText(/Laptop/i); // Search for "Laptop" in any title
-    expect(resultItems).toHaveLength(6); // Expect 6 results based on your mock data
-
-    // Optionally, check for specific parts of the titles to confirm data structure
-    expect(screen.getByText(/Laptop Pro 2025/i)).toBeInTheDocument();
-    expect(screen.getByText(/Laptop Max Deluxe/i)).toBeInTheDocument();
-    expect(screen.getByText(/Laptop Lite Version/i)).toBeInTheDocument();
-    expect(screen.getByText(/Laptop Basic Model/i)).toBeInTheDocument();
-    expect(screen.getByText(/Laptop Ultra 5G/i)).toBeInTheDocument();
-    expect(screen.getByText(/Laptop Mini Edition/i)).toBeInTheDocument();
-
-    // Verify other content elements if needed (e.g., prices, sites)
-    expect(screen.getByText('$499.99')).toBeInTheDocument();
-    expect(screen.getByText('Alibaba')).toBeInTheDocument();
+describe('App routing and auth behavior', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    jest.clearAllMocks();
   });
 
-  // Test for feature notification display on button click
-  test('feature notif on click', () => {
-    render(<App />);
-    fireEvent.click(screen.getByText(/Compare Across More Sites/i));
-    expect(screen.getByText('Comparison feature coming in our next update!')).toBeInTheDocument();
-    // Verify the close button is present
-    expect(screen.getByLabelText('Close notification')).toBeInTheDocument();
+  test('redirects unauthenticated users to /signin', () => {
+    renderAppWithPath('/');
+    expect(screen.getByText(/Mock SignIn Page/i)).toBeInTheDocument();
   });
 
-  // Optional: Test for empty search term
-  test('should clear results and reset hasSearched for empty search term', async () => {
-    render(<App />);
-    const searchInput = screen.getByPlaceholderText(/Search for a product/i);
-    const searchButton = screen.getByRole('button', { name: /Search/i });
+  test('shows SignIn at /signin when unauthenticated', () => {
+    renderAppWithPath('/signin');
+    expect(screen.getByText(/Mock SignIn Page/i)).toBeInTheDocument();
+  });
 
-    // First, perform a search to get results
-    fireEvent.change(searchInput, { target: { value: 'Test' } });
-    fireEvent.click(searchButton);
+  test('shows SignUp at /signup when unauthenticated', () => {
+    renderAppWithPath('/signup');
+    expect(screen.getByText(/Mock SignUp Page/i)).toBeInTheDocument();
+  });
+
+  test('renders MainApp when authenticated', () => {
+    localStorage.setItem('isAuthenticated', 'true');
+    renderAppWithPath('/');
+    expect(screen.getByText(/Mock MainApp/i)).toBeInTheDocument();
+  });
+
+  test('signs in and loads MainApp', async () => {
+    renderAppWithPath('/signin');
+    expect(screen.getByText(/Mock SignIn Page/i)).toBeInTheDocument();
+    const button = screen.getByTestId('signin-success-btn');
+
     await act(async () => {
-      jest.advanceTimersByTime(1000);
+      button.click();
     });
-    expect(screen.getAllByText(/Test/i)).toHaveLength(6); // Ensure results are there
 
-    // Now, simulate an empty search
-    fireEvent.change(searchInput, { target: { value: '' } });
-    fireEvent.click(searchButton);
+    expect(screen.getByText(/Mock MainApp/i)).toBeInTheDocument();
+    expect(localStorage.getItem('isAuthenticated')).toBe('true');
+  });
 
-    // Expect no results to be displayed and no-results message to appear
-    expect(screen.queryByRole('heading', { name: /Search Results/i })).not.toBeInTheDocument();
-    expect(screen.getByText(/No results found\. Try another search term\./i)).toBeInTheDocument();
+  test('signs up and loads MainApp', async () => {
+    renderAppWithPath('/signup');
+    const button = screen.getByTestId('signup-success-btn');
+
+    await act(async () => {
+      button.click();
+    });
+
+    expect(screen.getByText(/Mock MainApp/i)).toBeInTheDocument();
+    expect(localStorage.getItem('isAuthenticated')).toBe('true');
+  });
+
+  test('signs out and redirects to SignIn', async () => {
+    localStorage.setItem('isAuthenticated', 'true');
+    renderAppWithPath('/');
+    const button = screen.getByTestId('signout-btn');
+
+    await act(async () => {
+      button.click();
+    });
+
+    expect(screen.getByText(/Mock SignIn Page/i)).toBeInTheDocument();
+    expect(localStorage.getItem('isAuthenticated')).toBeNull();
+  });
+
+  test('unauthenticated route fallback shows SignIn', () => {
+    renderAppWithPath('/nonexistent');
+    expect(screen.getByText(/Mock SignIn Page/i)).toBeInTheDocument();
+  });
+
+  test('authenticated user sees MainApp at any route', () => {
+    localStorage.setItem('isAuthenticated', 'true');
+    renderAppWithPath('/anything');
+    expect(screen.getByText(/Mock MainApp/i)).toBeInTheDocument();
   });
 });
 

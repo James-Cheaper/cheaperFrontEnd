@@ -53,6 +53,115 @@ p {
   font-size: 1.1rem;
 }
 
+/* Fullscreen gradient background */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom right, #eff6ff, #c7d2fe);
+  padding: 2rem;
+}
+
+/* Card container */
+.auth-card {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Form headings */
+.auth-card h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  text-align: center;
+}
+
+.auth-card p {
+  font-size: 0.95rem;
+  color: #64748b;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* Input fields */
+.auth-card input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  margin-bottom: 1rem;
+  outline: none;
+  font-size: 1rem;
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* Override for password input in flex container */
+.auth-card .flex input {
+  width: auto;
+  margin-bottom: 0;
+  padding: 0.9rem;
+  margin-left: 0.75rem;
+}
+
+.auth-card input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
+}
+
+/* Buttons - Updated to be more specific and exclude visibility button */
+.auth-card .flex button:not([type="submit"]) {
+  width: auto;
+  padding: 0.5rem;
+  height: auto;
+  margin-left: 0.75rem; /* same as Tailwind's ml-3 */
+}
+
+.auth-card button[type="submit"]:hover {
+  background-color: #2563eb;
+}
+
+/* Link button */
+.auth-card .link-button {
+  background: none;
+  color: #3b82f6;
+  font-weight: 500;
+  padding: 0;
+  border: none;
+  margin-top: 1rem;
+  cursor: pointer;
+}
+
+.auth-card .link-button:hover {
+  text-decoration: underline;
+}
+
+
+.sign-out-button {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background-color: #dc2626;
+  color: white;
+  font-weight: bold;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  z-index: 1000;
+}
+
+.sign-out-button:hover {
+  background-color: #b91c1c;
+}
+
+
 /* --- Search Bar Styles --- */
 .search-container {
   display: flex;
