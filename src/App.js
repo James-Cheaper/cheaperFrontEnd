@@ -12,6 +12,7 @@ import SignUp from "./components/Auth/SignUp";
 import MainApp from "./MainApp";
 import "./App.css";
 
+// ✅ Inner app component with navigation logic
 function AppWithNavigation() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
     return localStorage.getItem("isAuthenticated") === "true";
@@ -22,13 +23,13 @@ function AppWithNavigation() {
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
     localStorage.setItem("isAuthenticated", "true");
-    navigate("/");
+    navigate("/", { replace: true });
   };
 
   const handleSignOut = () => {
     setIsAuthenticated(false);
     localStorage.removeItem("isAuthenticated");
-    navigate("/signin");
+    navigate("/signin", { replace: true });
   };
 
   return (
@@ -46,7 +47,7 @@ function AppWithNavigation() {
               path="/signup"
               element={<SignUp onAuthSuccess={handleAuthSuccess} />}
             />
-            <Route path="/*" element={<Navigate to="/signin" />} />
+            <Route path="/*" element={<Navigate to="/signin" replace />} />
           </>
         )}
       </Routes>
@@ -54,10 +55,12 @@ function AppWithNavigation() {
   );
 }
 
+// ✅ Main App component with dynamic key to force re-mount
 function App() {
   return (
     <Router>
-      <AppWithNavigation />
+      {/* 👇 Forces AppWithNavigation to re-mount if localStorage changes */}
+      <AppWithNavigation key={localStorage.getItem("isAuthenticated")} />
     </Router>
   );
 }

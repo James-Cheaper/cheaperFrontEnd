@@ -1,50 +1,70 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import AuthApp from './auth';
 
+// Mock SignIn component with display name
+jest.mock('./SignIn', () => {
+  const MockSignIn = ({ onSwitchToSignUp, onAuthSuccess }) => (
+    <div>
+      <h2>Sign In Form</h2>
+      <button onClick={onSwitchToSignUp}>Switch to Sign Up</button>
+      <button onClick={onAuthSuccess}>Mock Sign In</button>
+    </div>
+  );
+  MockSignIn.displayName = 'MockSignIn';
+  return MockSignIn;
+});
+
+// Mock SignUp component with display name
+jest.mock('./SignUp', () => {
+  const MockSignUp = ({ onSwitchToSignIn, onAuthSuccess }) => (
+    <div>
+      <h2>Sign Up Form</h2>
+      <button onClick={onSwitchToSignIn}>Switch to Sign In</button>
+      <button onClick={onAuthSuccess}>Mock Sign Up</button>
+    </div>
+  );
+  MockSignUp.displayName = 'MockSignUp';
+  return MockSignUp;
+});
+
 describe('AuthApp', () => {
+  const mockAuthSuccess = jest.fn();
+  const mockSwitchForm = jest.fn();
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
   it('renders sign-in form by default', () => {
-    render(
-      <AuthApp 
-        onAuthSuccess={() => {}} 
-        activeForm="signin"
-        onSwitchForm={() => {}}
-      />
-    );
-    
-    // Verify sign-in form elements are present
-    expect(screen.getByText(/Welcome Back/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Email Address/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Password/i)).toBeInTheDocument();
+    render(<AuthApp onAuthSuccess={mockAuthSuccess} />);
+    expect(screen.getByText('Sign In Form')).toBeInTheDocument();
   });
 
   it('renders sign-up form when activeForm is "signup"', () => {
     render(
       <AuthApp 
-        onAuthSuccess={() => {}} 
+        onAuthSuccess={mockAuthSuccess} 
         activeForm="signup"
-        onSwitchForm={() => {}}
       />
     );
-    
-    // Verify sign-up form elements are present
-    expect(screen.getByText(/Create Account/i)).toBeInTheDocument();
-    expect(screen.getByLabelText(/Full Name/i)).toBeInTheDocument();
+    expect(screen.getByText('Sign Up Form')).toBeInTheDocument();
   });
 
   it('calls onSwitchForm when switching forms', () => {
-    const mockSwitchForm = jest.fn();
     render(
       <AuthApp 
-        onAuthSuccess={() => {}} 
-        activeForm="signin"
+        onAuthSuccess={mockAuthSuccess}
         onSwitchForm={mockSwitchForm}
       />
     );
     
-    // Simulate clicking the "Sign up" link
-    screen.getByText(/Don't have an account/i).click();
-    
-    // Verify the callback was called with correct argument
+    fireEvent.click(screen.getByText('Switch to Sign Up'));
     expect(mockSwitchForm).toHaveBeenCalledWith('signup');
+  });
+
+  it('propagates auth success events', () => {
+    render(<AuthApp onAuthSuccess={mockAuthSuccess} />);
+    fireEvent.click(screen.getByText('Mock Sign In'));
+    expect(mockAuthSuccess).toHaveBeenCalled();
   });
 });
