@@ -1,92 +1,69 @@
 import React, { useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+} from "react-router-dom";
+
+import SignIn from "./components/Auth/SignIn";
+import SignUp from "./components/Auth/SignUp";
+import MainApp from "./MainApp";
 import "./App.css";
-import SearchBar from "./components/SearchBar";
 
-function App() {
-  const [searchResults, setSearchResults] = useState([]);
-  const [isSearching, setIsSearching] = useState(false);
-  const [hasSearched, setHasSearched] = useState(false);
-  const [featureNotification, setFeatureNotification] = useState("");
+// ✅ Inner app component with navigation logic
+function AppWithNavigation() {
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    return localStorage.getItem("isAuthenticated") === "true";
+  });
 
-  const handleSearch = (searchTerm) => {
-    setIsSearching(true);
-    setHasSearched(true);
+  const navigate = useNavigate();
 
-    // Simulating an API call with setTimeout
-    setTimeout(() => {
-      const mockResults = [
-        { id: 1, title: `${searchTerm} X`, price: "$499.99", site: "Alibaba" },
-        { id: 2, title: `${searchTerm} X`, price: "$475.50", site: "eBay" },
-        {
-          id: 3,
-          title: `${searchTerm} X`,
-          price: "$510.00",
-          site: "AliExpress",
-        },
-      ];
+  const handleAuthSuccess = () => {
+    setIsAuthenticated(true);
+    localStorage.setItem("isAuthenticated", "true");
+    navigate("/", { replace: true });
+  };
 
-      setSearchResults(mockResults);
-      setIsSearching(false);
-    }, 1000);
+  const handleSignOut = () => {
+    setIsAuthenticated(false);
+    localStorage.removeItem("isAuthenticated");
+    navigate("/signin", { replace: true });
   };
 
   return (
     <div className="App">
-      <h1>Cheaper</h1>
-      <p>Find the best prices across websites!</p>
-
-      <SearchBar onSearch={handleSearch} />
-
-      {isSearching && (
-        <div className="loading">Searching for the best prices...</div>
-      )}
-
-      {!isSearching && hasSearched && (
-        <div className="results-container">
-          <h2>Search Results</h2>
-
-          {searchResults.length > 0 ? (
-            searchResults.map((result) => (
-              <div key={result.id} className="result-item">
-                <div>
-                  <div className="result-title">{result.title}</div>
-                  <div className="result-site">{result.site}</div>
-                </div>
-                <div className="result-price">{result.price}</div>
-              </div>
-            ))
-          ) : (
-            <div className="no-results">
-              No results found. Try another search term.
-            </div>
-          )}
-        </div>
-      )}
-
-      <button
-        onClick={() =>
-          setFeatureNotification(
-            "Comparison feature coming in our next update!"
-          )
-        }
-        aria-live="polite"
-      >
-        Compare Across More Sites
-      </button>
-
-      {featureNotification && (
-        <div className="feature-notification">
-          {featureNotification}
-          <button
-            onClick={() => setFeatureNotification("")}
-            aria-label="Close notification"
-          >
-            ×
-          </button>
-        </div>
-      )}
+      <Routes>
+        {isAuthenticated ? (
+          <Route path="/*" element={<MainApp onSignOut={handleSignOut} />} />
+        ) : (
+          <>
+            <Route
+              path="/signin"
+              element={<SignIn onAuthSuccess={handleAuthSuccess} />}
+            />
+            <Route
+              path="/signup"
+              element={<SignUp onAuthSuccess={handleAuthSuccess} />}
+            />
+            <Route path="/*" element={<Navigate to="/signin" replace />} />
+          </>
+        )}
+      </Routes>
     </div>
   );
 }
 
+// ✅ Main App component with dynamic key to force re-mount
+function App() {
+  return (
+    <Router>
+      {/* 👇 Forces AppWithNavigation to re-mount if localStorage changes */}
+      <AppWithNavigation key={localStorage.getItem("isAuthenticated")} />
+    </Router>
+  );
+}
+
+export { AppWithNavigation };
 export default App;
