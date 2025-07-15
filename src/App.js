@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -10,7 +10,7 @@ import {
 import SignIn from "./components/Auth/SignIn";
 import SignUp from "./components/Auth/SignUp";
 import MainApp from "./MainApp";
-import CookieConsent from "react-cookie-consent";
+// Removed: import CookieConsent from "react-cookie-consent";
 import "./App.css";
 
 // ✅ Inner app component with navigation logic
@@ -19,7 +19,30 @@ function AppWithNavigation() {
     return localStorage.getItem("isAuthenticated") === "true";
   });
 
+  // State to manage visibility of our custom cookie banner
+  const [showCustomCookieBanner, setShowCustomCookieBanner] = useState(false);
+
   const navigate = useNavigate();
+
+  // Check for cookie consent on component mount
+  useEffect(() => {
+    const consentGiven = localStorage.getItem("cookieConsentGiven");
+    if (consentGiven !== "true") {
+      setShowCustomCookieBanner(true);
+    }
+  }, []);
+
+  const handleAcceptCookies = () => {
+    localStorage.setItem("cookieConsentGiven", "true");
+    setShowCustomCookieBanner(false);
+  };
+
+  const handleDeclineCookies = () => {
+    // For simplicity, declining also hides the banner.
+    // In a real app, you might want to set a different preference or redirect.
+    localStorage.setItem("cookieConsentGiven", "declined"); // Store 'declined'
+    setShowCustomCookieBanner(false);
+  };
 
   const handleAuthSuccess = () => {
     setIsAuthenticated(true);
@@ -35,75 +58,75 @@ function AppWithNavigation() {
 
   return (
     <div className="App">
-      {/* --- COOKIE BANNER: always visible at bottom until user accepts/declines --- */}
-      {/*
-        To place the "Accept" button before the "Decline" button,
-        we are swapping the `buttonText` and `declineButtonText` values.
-        We are also swapping their respective `buttonStyle` and `declineButtonStyle`
-        to ensure the correct visual styling (blue for Accept, red for Decline)
-        is maintained for the *role* of the button, regardless of its position.
-
-        This assumes that the `react-cookie-consent` library renders the button
-        associated with `declineButtonText` first when `enableDeclineButton` is true,
-        followed by the button associated with `buttonText`.
-      */}
-      <CookieConsent
-        // The button that appears first (visually on the left) will now be "Accept"
-        // This is done by assigning "Accept" to `declineButtonText`
-        declineButtonText="Accept"
-        // The button that appears second (visually on the right) will now be "Decline"
-        // This is done by assigning "Decline" to `buttonText`
-        buttonText="Decline"
-        enableDeclineButton
-        style={{
-          background: "#222",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          padding: ".1em 0"
-        }}
-        contentStyle={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          textAlign: "center",
-          gap: "0.1em",
-          margin: 0,
-          padding: 0,
-        }}
-        // Apply the style for "Accept" to the `declineButtonStyle` prop,
-        // as this prop now controls the "Accept" button's appearance.
-        declineButtonStyle={{
-          background: "#2196F3", // Blue for Accept
-          color: "#fff",
-          marginLeft: "0.6em", // Added left margin to bring the buttons in
-          marginRight: "0.6em", // Increased right margin for more spacing after "Accept"
-          borderRadius: "20px",
-          padding: "0.4em 1.2em",
-          fontWeight: "bold",
-          border: "none",
-          fontSize: "1em",
-          cursor: "pointer"
-        }}
-        // Apply the style for "Decline" to the `buttonStyle` prop,
-        // as this prop now controls the "Decline" button's appearance.
-        buttonStyle={{
-          background: "#F44336", // Red for Decline
-          color: "#fff",
-          marginLeft: 0, // No left margin for the second button in the pair
-          borderRadius: "20px",
-          padding: "0.4em 1.2em",
-          fontWeight: "bold",
-          border: "none",
-          fontSize: "1em",
-          cursor: "pointer"
-        }}
-      >
-        <span style={{ textAlign: "center", fontWeight: 500 }}>
-          We use cookies to improve your experience.
-        </span>
-      </CookieConsent>
-      {/* --- /COOKIE BANNER --- */}
+      {/* --- CUSTOM COOKIE BANNER --- */}
+      {showCustomCookieBanner && (
+        <div
+          style={{
+            position: "fixed",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            width: "100%",
+            backgroundColor: "#222", // Dark background
+            color: "white",
+            padding: "0.2em 1em", // Reduced vertical padding
+            textAlign: "center",
+            display: "flex", // Changed to flex
+            flexDirection: "row", // Changed to row for horizontal alignment
+            alignItems: "center", // Vertically center items
+            justifyContent: "center", // Horizontally center content
+            gap: "2em", // Space between text and buttons
+            zIndex: 99999, // Very high z-index
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.5)", // Subtle shadow
+          }}
+        >
+          <span style={{ fontSize: "1.1em", fontWeight: 500, flexShrink: 0 }}>
+            We use cookies to improve your experience.
+          </span>
+          <div
+            style={{
+              display: "flex",
+              gap: "1em",
+              flexShrink: 0,
+              marginTop: "-0.2em", // Added to pull buttons up slightly
+            }}
+          >
+            <button
+              onClick={handleAcceptCookies}
+              style={{
+                background: "#2196F3", // Blue for Accept
+                color: "#fff",
+                borderRadius: "20px",
+                padding: "0.6em 1.1em",
+                fontWeight: "bold",
+                border: "none",
+                fontSize: "1em",
+                cursor: "pointer",
+                transition: "background-color 0.2s ease",
+              }}
+            >
+              Accept
+            </button>
+            <button
+              onClick={handleDeclineCookies}
+              style={{
+                background: "#F44336", // Red for Decline
+                color: "#fff",
+                borderRadius: "20px",
+                padding: "0.6em 1.1em",
+                fontWeight: "bold",
+                border: "none",
+                fontSize: "1em",
+                cursor: "pointer",
+                transition: "background-color 0.2s ease",
+              }}
+            >
+              Decline
+            </button>
+          </div>
+        </div>
+      )}
+      {/* --- /CUSTOM COOKIE BANNER --- */}
 
       <Routes>
         {isAuthenticated ? (
