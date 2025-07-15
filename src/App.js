@@ -69,7 +69,7 @@ function AppWithNavigation() {
             width: "100%",
             backgroundColor: "#222", // Dark background
             color: "white",
-            padding: "0.2em 0.5em", // Vertical padding for a thin banner
+            padding: "0.005em 0.5em", // Vertical padding for a thin banner
             textAlign: "center",
             display: "flex",
             flexDirection: "row",
