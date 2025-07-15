@@ -69,26 +69,27 @@ function AppWithNavigation() {
             width: "100%",
             backgroundColor: "#222", // Dark background
             color: "white",
-            padding: "0.2em 1em", // Reduced vertical padding
+            padding: "0.2em 0.5em", // Vertical padding for a thin banner
             textAlign: "center",
-            display: "flex", // Changed to flex
-            flexDirection: "row", // Changed to row for horizontal alignment
+            display: "flex",
+            flexDirection: "row",
             alignItems: "center", // Vertically center items
-            justifyContent: "center", // Horizontally center content
-            gap: "2em", // Space between text and buttons
-            zIndex: 99999, // Very high z-index
-            boxShadow: "0 -2px 10px rgba(0,0,0,0.5)", // Subtle shadow
+            justifyContent: "center",
+            gap: "1em", // Gap between text and buttons
+            zIndex: 99999,
+            boxShadow: "0 -2px 10px rgba(0,0,0,0.5)",
           }}
         >
-          <span style={{ fontSize: "1.1em", fontWeight: 500, flexShrink: 0 }}>
+          <span style={{ fontSize: "0.85em", fontWeight: 500, flexShrink: 0 }}>
             We use cookies to improve your experience.
           </span>
           <div
             style={{
               display: "flex",
-              gap: "1em",
+              gap: "0.6em", // Gap between buttons
               flexShrink: 0,
-              marginTop: "-0.2em", // Added to pull buttons up slightly
+              position: "relative", // Added position relative
+              top: "-0.9em",       // Moved buttons up slightly using 'top'
             }}
           >
             <button
@@ -97,10 +98,12 @@ function AppWithNavigation() {
                 background: "#2196F3", // Blue for Accept
                 color: "#fff",
                 borderRadius: "20px",
-                padding: "0.6em 1.1em",
+                padding: "0.5em 0.8em", // Button padding
                 fontWeight: "bold",
                 border: "none",
-                fontSize: "1em",
+                // CHANGE START: Made font size identical to Decline button
+                fontSize: "0.8em",
+                // CHANGE END
                 cursor: "pointer",
                 transition: "background-color 0.2s ease",
               }}
@@ -113,10 +116,10 @@ function AppWithNavigation() {
                 background: "#F44336", // Red for Decline
                 color: "#fff",
                 borderRadius: "20px",
-                padding: "0.6em 1.1em",
+                padding: "0.3em 0.8em", // Button padding
                 fontWeight: "bold",
                 border: "none",
-                fontSize: "1em",
+                fontSize: "0.8em", // Button font size
                 cursor: "pointer",
                 transition: "background-color 0.2s ease",
               }}
@@ -161,4 +164,3 @@ function App() {
 
 export { AppWithNavigation };
 export default App;
-
