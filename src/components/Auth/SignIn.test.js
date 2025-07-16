@@ -1,9 +1,8 @@
 import React from "react";
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import SignIn from "../SignIn"; // Adjust path as needed
+import { render, screen, fireEvent, waitFor, act } from "@testing-library/react";
+import SignIn from "./SignIn";
 
-// Mock useNavigate from react-router-dom as it's used in SignIn.js
-// This is crucial because tests don't run in a browser environment with a router context.
+// Mock useNavigate from react-router-dom
 const mockedUsedNavigate = jest.fn();
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -15,96 +14,80 @@ describe("SignIn component", () => {
   let originalAlert;
 
   beforeAll(() => {
-    // Store original alert and mock it to prevent test failures
+    // Store original alert and mock it
     originalAlert = window.alert;
     window.alert = jest.fn();
 
-    // Enable Jest's fake timers for consistent handling of setTimeout
+    // Enable fake timers
     jest.useFakeTimers();
   });
 
   afterAll(() => {
-    // Restore original alert after all tests are done
+    // Restore original alert and timers
     window.alert = originalAlert;
-
-    // Restore real timers after all tests are done
     jest.useRealTimers();
   });
 
   beforeEach(() => {
-    // Clear mocks before each test to ensure isolation
     mockAuthSuccess.mockClear();
     mockedUsedNavigate.mockClear();
-    window.alert.mockClear(); // Clear alert mock too
-
-    // Reset timers before each test
-    jest.runOnlyPendingTimers(); // Run any timers left from previous tests (shouldn't be any with proper cleanup)
-    jest.clearAllTimers(); // Clear all active timers
+    window.alert.mockClear();
+    jest.clearAllTimers();
 
     render(<SignIn onAuthSuccess={mockAuthSuccess} />);
   });
 
   it("renders email and password input fields", () => {
-    // Use getByPlaceholderText for email as it doesn't have a direct label in SignIn.js
-    expect(screen.getByPlaceholderText(/email address/i)).toBeInTheDocument();
-    // getByLabelText works for password because there's an explicit label
-    expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/email/i)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/password/i)).toBeInTheDocument();
   });
 
   it("shows validation errors when submitting empty form", async () => {
-    // Correct button name: "Sign In"
-    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
-
+    fireEvent.click(screen.getByRole("button", { name: /login/i }));
     expect(await screen.findByText(/email is required/i)).toBeInTheDocument();
     expect(await screen.findByText(/password is required/i)).toBeInTheDocument();
   });
 
   it("accepts user input", () => {
-    // Use getByPlaceholderText for email
-    const emailInput = screen.getByPlaceholderText(/email address/i);
-    const passwordInput = screen.getByLabelText(/password/i);
+    const emailInput = screen.getByPlaceholderText(/email/i);
+    const passwordInput = screen.getByPlaceholderText(/password/i);
 
     fireEvent.change(emailInput, { target: { value: "test@example.com" } });
-    fireEvent.change(passwordInput, { target: { value: "password123" } });
+    fireEvent.change(passwordInput, { target: { value: "Password123!" } });
 
     expect(emailInput).toHaveValue("test@example.com");
-    expect(passwordInput).toHaveValue("password123");
+    expect(passwordInput).toHaveValue("Password123!");
   });
 
   it("calls onAuthSuccess after valid submission", async () => {
-    // Use getByPlaceholderText for email
-    fireEvent.change(screen.getByPlaceholderText(/email address/i), {
+    fireEvent.change(screen.getByPlaceholderText(/email/i), {
       target: { value: "test@example.com" },
     });
-    fireEvent.change(screen.getByLabelText(/password/i), {
-      target: { value: "password123" },
+    fireEvent.change(screen.getByPlaceholderText(/password/i), {
+      target: { value: "Password123!" },
     });
 
-    // Correct button name: "Sign In"
-    fireEvent.click(screen.getByRole("button", { name: /sign in/i }));
+    const loginButton = screen.getByRole("button", { name: /login/i });
+    fireEvent.click(loginButton);
+    expect(loginButton).toBeDisabled();
 
-    // Assert that the button text changes to "Signing in..." immediately after click
-    expect(screen.getByRole("button", { name: /signing in\.\.\./i })).toBeInTheDocument();
+    // Wrap timer advance in act to avoid React warnings
+    await act(() => {
+      jest.advanceTimersByTime(1500);
+      return Promise.resolve(); // to ensure all microtasks finish
+    });
 
-    // Advance timers by the duration of the setTimeout in SignIn.js (1500ms)
-    jest.advanceTimersByTime(1500);
-
-    // Now, the setTimeout callback should have executed.
-    // Wait for the button text to revert to "Sign In" and mockAuthSuccess to be called.
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /sign in/i })).toBeInTheDocument();
+      expect(loginButton).toBeEnabled();
       expect(mockAuthSuccess).toHaveBeenCalledTimes(1);
     });
 
-    // Optionally, check if alert was called (if you decide to keep it for now)
     expect(window.alert).toHaveBeenCalledWith('Sign in successful!');
   });
 
-  it('navigates to /signup when "Sign up" button is clicked', () => {
-    fireEvent.click(screen.getByRole('button', { name: /sign up/i }));
+  it('navigates to /signup when "Register" button is clicked', () => {
+    fireEvent.click(screen.getByRole('button', { name: /register/i }));
     expect(mockedUsedNavigate).toHaveBeenCalledWith('/signup');
   });
 });
-
-
 
