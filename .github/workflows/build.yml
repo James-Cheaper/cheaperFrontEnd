@@ -8,21 +8,24 @@ on:
 
 env:
   CI: true
-  NODE_VERSION: '18'
+  NODE_VERSION: '20'
 
 jobs:
   lint_and_test:
     name: Lint & Test
     runs-on: ubuntu-latest
-    
+    strategy:
+      matrix:
+        node-version: [20.x]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
 
       - name: Install ESLintv8
@@ -30,12 +33,9 @@ jobs:
 
       - name: Run ESLint
         run: npx eslint src --ext .js,.jsx --max-warnings=0
-      
+
       - name: Run Jest tests
         run: npm run test:ci
-
-#      - name: Run Lighthouse CI
-#        run: npx lhci autorun --config=.lighthouserc.js
 
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
@@ -50,32 +50,32 @@ jobs:
     needs: lint_and_test
     strategy:
       matrix:
-        node-version: [18.x]
-    
+        node-version: [20.x]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      
+
       - name: Install dependencies
         run: npm ci
 
       - name: Install serve
         run: npm install -g serve
-      
+
       - name: Build project
         run: |
-              npm run build
-              ls -la build
+          npm run build
+          ls -la build
 
       - name: Set Public Url
-        run: echo "PUBLIC_URL=." >> $GITHUB_ENV 
-    
+        run: echo "PUBLIC_URL=." >> $GITHUB_ENV
+
       - name: Start Server and Log Output
         run: |
           npx serve -s build -l 8080 > server.log 2>&1 &
@@ -99,7 +99,7 @@ jobs:
             fi
           done
           curl -I http://localhost:8080 || (echo "Server is not running after 3 attempts" && exit 1)
-      
+
       - name: Check service worker
         run: |
           grep -i "serviceWorker" build/index.html || echo "❌ No service worker registered"
@@ -107,7 +107,7 @@ jobs:
 
       - name: List build content
         run: ls -la build
-      
+
       - name: Log server contents
         run: cat server.log
 
@@ -118,13 +118,13 @@ jobs:
         run: |
           echo "🔍 Build manifest.json:"
           cat build/manifest.json || echo "❌ manifest.json missing"
-    
+
           echo "🔍 Check index.html for manifest link:"
           grep -i "manifest" build/index.html || echo "❌ Manifest not linked"
-    
+
           echo "🔍 Apple touch icon:"
           grep -i "apple-touch-icon" build/index.html || echo "❌ Not linked"
-    
+
           echo "🔍 Check icons folder:"
           ls -lh build/icons || echo "❌ Icons folder missing"
 #
@@ -141,7 +141,7 @@ jobs:
       
       - name: Package Extension
         run: npm run package
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
