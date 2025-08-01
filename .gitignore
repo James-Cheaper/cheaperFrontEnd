@@ -26,3 +26,6 @@ Icon
 
 # Test coverage
 coverage/
+
+#Miscellaneous
+package-lock.json
