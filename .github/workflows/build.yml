@@ -6,36 +6,29 @@ on:
   pull_request:
     branches: [ main, develop ]
 
-env:
-  CI: true
-  NODE_VERSION: '18'
-
 jobs:
   lint_and_test:
     name: Lint & Test
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set up Node.js
+
+      - name: Set up Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 20
           cache: 'npm'
 
-      - name: Install ESLintv8
+      - name: Install ESLint
         run: npm install --save-dev eslint@8
 
       - name: Run ESLint
         run: npx eslint src --ext .js,.jsx --max-warnings=0
-      
+
       - name: Run Jest tests
         run: npm run test:ci
-
-#      - name: Run Lighthouse CI
-#        run: npx lhci autorun --config=.lighthouserc.js
 
       - name: Upload test coverage
         uses: actions/upload-artifact@v4
@@ -48,34 +41,31 @@ jobs:
     name: Build & Validate
     runs-on: ubuntu-latest
     needs: lint_and_test
-    strategy:
-      matrix:
-        node-version: [18.x]
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      
-      - name: Set up Node.js
+
+      - name: Set up Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ env.NODE_VERSION }}
+          node-version: 20
           cache: 'npm'
-      
+
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Install serve
         run: npm install -g serve
-      
+
       - name: Build project
         run: |
-              npm run build
-              ls -la build
+          npm run build
+          ls -la build
 
       - name: Set Public Url
-        run: echo "PUBLIC_URL=." >> $GITHUB_ENV 
-    
+        run: echo "PUBLIC_URL=." >> $GITHUB_ENV
+
       - name: Start Server and Log Output
         run: |
           npx serve -s build -l 8080 > server.log 2>&1 &
@@ -86,7 +76,7 @@ jobs:
       - name: Display Server Logs
         run: cat server.log
 
-      - name: verify server running
+      - name: Verify server running
         run: |
           for i in {1..3}; do
             echo "Attempt $i to check server status..."
@@ -99,34 +89,22 @@ jobs:
             fi
           done
           curl -I http://localhost:8080 || (echo "Server is not running after 3 attempts" && exit 1)
-      
+
       - name: Check service worker
         run: |
           grep -i "serviceWorker" build/index.html || echo "❌ No service worker registered"
           ls build/service-worker.js || echo "❌ service-worker.js not found"
 
-      - name: List build content
-        run: ls -la build
-      
-      - name: Log server contents
-        run: cat server.log
-
-      - name: Debug loaded HTML
-        run: curl -s http://localhost:8080 | tee page.html
-
       - name: Debug Build Output
         run: |
-          echo "🔍 Build manifest.json:"
-          cat build/manifest.json || echo "❌ manifest.json missing"
-    
-          echo "🔍 Check index.html for manifest link:"
-          grep -i "manifest" build/index.html || echo "❌ Manifest not linked"
-    
-          echo "🔍 Apple touch icon:"
-          grep -i "apple-touch-icon" build/index.html || echo "❌ Not linked"
-    
-          echo "🔍 Check icons folder:"
-          ls -lh build/icons || echo "❌ Icons folder missing"
+          echo "🔍 manifest.json:"
+          cat build/manifest.json || echo "❌ missing"
+          echo "🔍 index.html link to manifest:"
+          grep -i "manifest" build/index.html || echo "❌ not linked"
+          echo "🔍 apple-touch-icon:"
+          grep -i "apple-touch-icon" build/index.html || echo "❌ not linked"
+          echo "🔍 icons folder:"
+          ls -lh build/icons || echo "❌ missing"
 #
 #      - name: Run Lighthouse audit
 #        uses: treosh/lighthouse-ci-action@v9
@@ -141,7 +119,7 @@ jobs:
       
       - name: Package Extension
         run: npm run package
-      
+
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:

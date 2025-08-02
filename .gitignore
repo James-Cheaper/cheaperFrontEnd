@@ -1,3 +1,5 @@
+Ignore coverage .gitignore
+
 #node modules take up alot of space after npm install
 #build related
 node_modules
@@ -21,3 +23,7 @@ Icon
 #sensitive code
 .settings/
 .vscode/
+
+# Test coverage
+coverage/
+

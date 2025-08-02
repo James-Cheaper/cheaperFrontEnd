@@ -1,0 +1,249 @@
+/* auth.css - styled and cleaned up */
+
+/* Wrapper for the entire authentication section (login, register, forgot password) */
+.auth-wrapper {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(to bottom right, #eff6ff, #c7d2fe);
+  padding: 2rem;
+}
+
+/* Card container for the authentication forms */
+.auth-card {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+  max-width: 400px;
+  width: 100%;
+}
+
+/* Heading style within the auth card */
+.auth-card h1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1e293b;
+  margin-bottom: 0.5rem;
+  text-align: left;
+}
+
+/* Paragraph style within the auth card */
+.auth-card p {
+  font-size: 0.95rem;
+  color: #64748b;
+  text-align: left;
+  margin-bottom: 1.5rem;
+}
+
+/* General input field styling within the authentication form */
+.auth-form input[type="email"],
+.auth-form input[type="password"],
+.auth-form input[type="text"] {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  color: #1f2937;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  line-height: 1.5;
+}
+
+.auth-form input[type="email"]:focus,
+.auth-form input[type="password"]:focus,
+.auth-form input[type="text"]:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Email input container with icon on the right */
+.email-input-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Right-aligned mail icon inside email input */
+.email-icon-right {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-90%);
+  height: 18px;
+  width: 18px;
+  color: #888;
+  pointer-events: none;
+}
+
+/* Input adjusted to leave space for right-side icon */
+.login-email {
+  padding-right: 2.5rem;
+}
+
+/* Container for password input and icon */
+.password-input-container {
+  position: relative;
+  width: 100%;
+}
+
+/* Password input with right padding */
+.login-password {
+  padding-right: 3rem;
+}
+
+/* --- Inserted snippet here --- */
+/* Small icon inside password input (like email icon) */
+.password-icon {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  transform: translateY(-90%);
+  color: #888;
+  cursor: pointer;
+  height: 18px;
+  width: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.password-icon:hover {
+  color: #1e293b;
+}
+/* --- end snippet --- */
+
+/* Password toggle icon button (if used anywhere) */
+.password-toggle-icon-button {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-70%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: #64748b;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+}
+
+.password-toggle-icon-button:hover {
+  color: #1e293b;
+}
+
+.password-toggle-icon-button:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+}
+
+/* Submit button */
+.auth-submit-button {
+  width: 100%;
+  background-color: #6b21a8;
+  color: #ffffff;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.auth-submit-button:hover {
+  background-color: #581c87;
+}
+
+.auth-submit-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+/* Forgot password button */
+.forgot-password {
+  background: none;
+  border: none;
+  color: #6b21a8;
+  font-size: 0.9rem;
+  cursor: pointer;
+  text-align: center;
+  width: 100%;
+  display: block;
+  margin-top: 1rem;
+}
+
+.forgot-password:hover {
+  text-decoration: underline;
+}
+
+/* Inline register link */
+.link-button {
+  background: none;
+  border: none;
+  color: #6b21a8;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: inline;
+  padding: 0;
+  margin-left: 0.25rem;
+}
+
+.link-button:hover {
+  text-decoration: underline;
+}
+
+/* Responsive Design */
+
+/* Mobile (≤480px) */
+@media (max-width: 480px) {
+  .auth-card {
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+  }
+  .auth-card h1 {
+    font-size: 1.75rem;
+  }
+  .auth-card p {
+    font-size: 0.85rem;
+  }
+  .auth-form input[type="email"],
+  .auth-form input[type="password"],
+  .auth-form input[type="text"] {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+  .password-input-container .login-password {
+    padding-right: 2.25rem;
+  }
+  .password-toggle-icon-button {
+    right: 0.6rem;
+  }
+  .auth-submit-button {
+    font-size: 1rem;
+    padding: 0.6rem 1rem;
+  }
+  .forgot-password,
+  .link-button {
+    font-size: 0.8rem;
+  }
+}
+
+/* Tablet (481px–768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .auth-card {
+    padding: 2rem;
+  }
+  .auth-card h1 {
+    font-size: 1.875rem;
+  }
+  .auth-card p {
+    font-size: 0.9rem;
+  }
+}
+
+
+
